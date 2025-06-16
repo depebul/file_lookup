@@ -60,15 +60,16 @@ fn search_files(
                 is_directory: entry.file_type().is_dir(),
             };
 
-            // Handle directory matching
             if entry.file_type().is_dir() {
                 if cli.folders_only || cli.include_folders {
                     result.matches_in_name = directory_matcher::check_directory_match(
-                        path, &cli.query, regex, cli.ignore_case
+                        path,
+                        &cli.query,
+                        regex,
+                        cli.ignore_case,
                     );
                 }
-                
-                // For directories, we only check name matches, not content
+
                 if result.matches_in_name {
                     stats.matches_found.fetch_add(1, Ordering::Relaxed);
                     return Some(result);
@@ -77,7 +78,6 @@ fn search_files(
                 }
             }
 
-            // Handle file matching (existing logic)
             if !cli.content_only && !cli.folders_only {
                 result.matches_in_name =
                     name_matcher::check_filename_match(path, &cli.query, regex, cli.ignore_case);
