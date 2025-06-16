@@ -1,4 +1,5 @@
 pub mod content_searcher;
+pub mod directory_matcher;
 pub mod file_walker;
 pub mod name_matcher;
 
@@ -56,14 +57,33 @@ fn search_files(
                 matches_in_name: false,
                 content_matches: Vec::new(),
                 encoding_warning: None,
+                is_directory: entry.file_type().is_dir(),
             };
 
-            if !cli.content_only {
+            // Handle directory matching
+            if entry.file_type().is_dir() {
+                if cli.folders_only || cli.include_folders {
+                    result.matches_in_name = directory_matcher::check_directory_match(
+                        path, &cli.query, regex, cli.ignore_case
+                    );
+                }
+                
+                // For directories, we only check name matches, not content
+                if result.matches_in_name {
+                    stats.matches_found.fetch_add(1, Ordering::Relaxed);
+                    return Some(result);
+                } else {
+                    return None;
+                }
+            }
+
+            // Handle file matching (existing logic)
+            if !cli.content_only && !cli.folders_only {
                 result.matches_in_name =
                     name_matcher::check_filename_match(path, &cli.query, regex, cli.ignore_case);
             }
 
-            if !cli.name_only && crate::utils::is_text_file(path) {
+            if !cli.name_only && !cli.folders_only && crate::utils::is_text_file(path) {
                 if cli.utf8_only && !is_valid_utf8_file(path) {
                     return None;
                 }

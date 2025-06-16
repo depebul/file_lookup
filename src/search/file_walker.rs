@@ -6,14 +6,32 @@ pub fn collect_files(cli: &Cli) -> Result<Vec<DirEntry>> {
     let walker = WalkDir::new(&cli.directory)
         .max_depth(cli.max_depth.unwrap_or(usize::MAX))
         .into_iter()
-        .filter_map(|e| e.ok())
-        .filter(|entry| entry.file_type().is_file());
+        .filter_map(|e| e.ok());
     
-    let files: Vec<_> = walker
-        .filter(|entry| filter_by_extension(entry, &cli.extensions))
+    let entries: Vec<_> = walker
+        .filter(|entry| {
+            if cli.folders_only {
+                // Only include directories
+                entry.file_type().is_dir()
+            } else if cli.include_folders {
+                // Include both files and directories
+                true
+            } else {
+                // Default: only files
+                entry.file_type().is_file()
+            }
+        })
+        .filter(|entry| {
+            // Apply extension filter only to files
+            if entry.file_type().is_file() {
+                filter_by_extension(entry, &cli.extensions)
+            } else {
+                true
+            }
+        })
         .collect();
     
-    Ok(files)
+    Ok(entries)
 }
 
 fn filter_by_extension(entry: &DirEntry, extensions: &Option<Vec<String>>) -> bool {

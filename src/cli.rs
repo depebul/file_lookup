@@ -22,6 +22,14 @@ pub struct Cli {
     #[arg(long)]
     pub content_only: bool,
 
+    /// Search only in folder/directory names
+    #[arg(long)]
+    pub folders_only: bool,
+
+    /// Include folders in search results
+    #[arg(long)]
+    pub include_folders: bool,
+
     /// Use regular expressions
     #[arg(short, long)]
     pub regex: bool,

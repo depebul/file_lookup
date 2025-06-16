@@ -7,6 +7,7 @@ pub struct SearchResult {
     pub matches_in_name: bool,
     pub content_matches: Vec<(usize, String)>,
     pub encoding_warning: Option<String>,
+    pub is_directory: bool,
 }
 
 pub struct SearchStats {

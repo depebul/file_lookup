@@ -43,9 +43,12 @@ pub fn show_stats(stats: &SearchStats) {
 }
 
 fn show_file_result(result: &SearchResult, query: &str, max_lines: usize) {
+    let icon = if result.is_directory { "📂" } else { "📁" };
+    let item_type = if result.is_directory { "directory" } else { "file" };
+    
     println!(
         "\n{} {}",
-        "📁".bright_blue(),
+        icon.bright_blue(),
         result.file_path.display().to_string().bright_white()
     );
 
@@ -57,7 +60,7 @@ fn show_file_result(result: &SearchResult, query: &str, max_lines: usize) {
         println!(
             "   {} {}",
             "✓".bright_green(),
-            "Match in filename".bright_cyan()
+            format!("Match in {} name", item_type).bright_cyan()
         );
     }
 
