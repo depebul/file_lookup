@@ -7,6 +7,7 @@ pub fn search_file_content(
     query: &str,
     regex: Option<&Regex>,
     ignore_case: bool,
+    max_line_length: usize,
 ) -> Result<Vec<(usize, String)>> {
     let content = match std::fs::read_to_string(path) {
         Ok(content) => content,
@@ -19,6 +20,10 @@ pub fn search_file_content(
     let mut matches = Vec::new();
 
     for (line_num, line) in content.lines().enumerate() {
+        if line.len() > max_line_length {
+            return Err(anyhow::anyhow!("Line too long: {} characters", line.len()));
+        }
+
         let is_match = if let Some(regex) = regex {
             regex.is_match(line)
         } else if ignore_case {

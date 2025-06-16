@@ -53,4 +53,8 @@ pub struct Cli {
     /// Show encoding warnings for non-UTF-8 files
     #[arg(long)]
     pub show_encoding_warnings: bool,
+
+    /// Skip files with lines longer than this limit (default: 10000)
+    #[arg(long, default_value = "10000")]
+    pub max_line_length: usize,
 }

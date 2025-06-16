@@ -73,6 +73,7 @@ fn search_files(
                     &cli.query,
                     regex,
                     cli.ignore_case,
+                    cli.max_line_length,
                 ) {
                     Ok(matches) => {
                         result.content_matches = matches;
@@ -81,6 +82,13 @@ fn search_files(
                             result.encoding_warning =
                                 Some("File contains non-UTF-8 characters".to_string());
                         }
+                    }
+                    Err(err) if err.to_string().contains("Line too long") => {
+                        if cli.show_encoding_warnings {
+                            result.encoding_warning = Some(format!("Skipped: {}", err));
+                        }
+
+                        return None;
                     }
                     Err(_) if cli.show_encoding_warnings => {
                         result.encoding_warning =
