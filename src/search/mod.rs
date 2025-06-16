@@ -58,15 +58,12 @@ fn search_files(
                 encoding_warning: None,
             };
 
-            // Check filename
             if !cli.content_only {
                 result.matches_in_name =
                     name_matcher::check_filename_match(path, &cli.query, regex, cli.ignore_case);
             }
 
-            // Check file content
             if !cli.name_only && crate::utils::is_text_file(path) {
-                // Skip non-UTF-8 files if utf8_only flag is set
                 if cli.utf8_only && !is_valid_utf8_file(path) {
                     return None;
                 }
@@ -80,7 +77,6 @@ fn search_files(
                     Ok(matches) => {
                         result.content_matches = matches;
 
-                        // Add encoding warning if needed
                         if cli.show_encoding_warnings && !is_valid_utf8_file(path) {
                             result.encoding_warning =
                                 Some("File contains non-UTF-8 characters".to_string());
@@ -90,9 +86,7 @@ fn search_files(
                         result.encoding_warning =
                             Some("Failed to read file (encoding issue)".to_string());
                     }
-                    Err(_) => {
-                        // Silently skip files that can't be read
-                    }
+                    Err(_) => {}
                 }
             }
 

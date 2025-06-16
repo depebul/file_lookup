@@ -66,7 +66,6 @@ pub fn is_text_file(path: &Path) -> bool {
         return text_extensions.contains(&extension.to_lowercase().as_str());
     }
 
-    // Check files without extension
     if let Some(file_name) = path.file_name().and_then(|name| name.to_str()) {
         let special_files = [
             "Makefile",
@@ -88,7 +87,6 @@ pub fn is_text_file(path: &Path) -> bool {
         }
     }
 
-    // Try to detect if it's a text file by reading first few bytes
     is_likely_text_file(path)
 }
 
@@ -96,23 +94,20 @@ fn is_likely_text_file(path: &Path) -> bool {
     if let Ok(sample) = std::fs::read(path) {
         let sample_size = std::cmp::min(512, sample.len());
         if sample_size == 0 {
-            return true; // Empty file is considered text
+            return true;
         }
 
         let sample = &sample[..sample_size];
 
-        // Check for null bytes (common in binary files)
         let null_count = sample.iter().filter(|&&byte| byte == 0).count();
         if null_count > sample_size / 10 {
             return false;
         }
 
-        // Check UTF-8 validity
         if let Ok(_) = std::str::from_utf8(sample) {
             return true;
         }
 
-        // Check if it's mostly printable ASCII
         let printable_count = sample
             .iter()
             .filter(|&&byte| byte >= 32 && byte <= 126 || byte == 9 || byte == 10 || byte == 13)

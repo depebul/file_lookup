@@ -49,7 +49,6 @@ fn show_file_result(result: &SearchResult, query: &str, max_lines: usize) {
         result.file_path.display().to_string().bright_white()
     );
 
-    // Show encoding warning if present
     if let Some(ref warning) = result.encoding_warning {
         println!("   {} {}", "⚠️".bright_yellow(), warning.bright_yellow());
     }
@@ -100,6 +99,5 @@ fn show_file_result(result: &SearchResult, query: &str, max_lines: usize) {
 }
 
 fn highlight_matches(text: &str, query: &str) -> String {
-    // Simple highlighting - can be expanded for regex support
     text.replace(query, &query.bright_red().to_string())
 }

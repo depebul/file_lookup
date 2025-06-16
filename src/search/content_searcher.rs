@@ -8,11 +8,9 @@ pub fn search_file_content(
     regex: Option<&Regex>,
     ignore_case: bool,
 ) -> Result<Vec<(usize, String)>> {
-    // Try to read as UTF-8 first
     let content = match std::fs::read_to_string(path) {
         Ok(content) => content,
         Err(_) => {
-            // If UTF-8 fails, try reading as bytes and convert lossy
             let bytes = std::fs::read(path)?;
             String::from_utf8_lossy(&bytes).to_string()
         }
